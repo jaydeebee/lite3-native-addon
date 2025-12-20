@@ -1,0 +1,49 @@
+{
+  "name": "@jaydeebee/lite3",
+  "version": "0.1.0",
+  "description": "Node.js bindings for lite3 (TRON) zero-copy serialization library",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "build",
+    "src/addon.c",
+    "binding.gyp"
+  ],
+  "scripts": {
+    "prepare": "[ -f deps/lite3/include/lite3.h ] || git submodule update --init --recursive",
+    "build:native": "node-gyp rebuild",
+    "build:ts": "tsup",
+    "build": "npm run build:native && npm run build:ts",
+    "install": "node-gyp rebuild",
+    "clean": "node-gyp clean && rm -rf dist",
+    "test": "node --test"
+  },
+  "keywords": [
+    "serialization",
+    "binary",
+    "zero-copy",
+    "native",
+    "lite3",
+    "tron"
+  ],
+  "license": "MIT",
+  "gypfile": true,
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "node-gyp": "^10.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

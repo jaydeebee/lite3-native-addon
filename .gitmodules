@@ -1,0 +1,3 @@
+[submodule "deps/lite3"]
+	path = deps/lite3
+	url = https://github.com/fastserial/lite3.git
