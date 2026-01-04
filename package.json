@@ -21,8 +21,9 @@
   "scripts": {
     "prepare": "[ -f deps/lite3/include/lite3.h ] || git submodule update --init --recursive",
     "build:native": "node-gyp rebuild",
+    "build:native:debug": "node-gyp rebuild --debug",
     "build:ts": "tsup",
-    "build": "npm run build:native && npm run build:ts",
+    "build": "pnpm build:native && pnpm build:ts",
     "install": "node-gyp rebuild",
     "clean": "node-gyp clean && rm -rf dist",
     "test": "node --test"

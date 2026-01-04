@@ -27,6 +27,8 @@ add_definitions(
 # Dummy library target for IDE awareness (not actually built)
 add_library(lite3_ide SHARED EXCLUDE_FROM_ALL
     src/addon.c
+    src/addon_encode.c
+    src/addon_decode.c
 )
 
 # Read Node version from .nvmrc
@@ -53,4 +55,31 @@ add_custom_target(install_deps
             $ENV{HOME}/.nvm/nvm-exec pnpm install
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Installing dependencies"
+)
+
+# Debug build target
+add_custom_target(build_addon_debug
+    COMMAND ${CMAKE_COMMAND} -E env NVM_VERSION=${NODE_VERSION}
+            $ENV{HOME}/.nvm/nvm-exec node-gyp rebuild --debug
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Building native addon with debug symbols"
+)
+
+# Debug test script path (create this file for your test case)
+set(DEBUG_TEST_SCRIPT "${CMAKE_SOURCE_DIR}/test/debug.js")
+
+# Run node under lldb
+add_custom_target(debug_addon
+    COMMAND lldb -o run -- $ENV{HOME}/.nvm/nvm-exec node ${DEBUG_TEST_SCRIPT}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS build_addon_debug
+    COMMENT "Running node under lldb debugger"
+)
+
+# Quick debug - runs lldb with inline test (stops at lldb prompt)
+add_custom_target(debug_quick
+    COMMAND lldb -- $ENV{HOME}/.nvm/nvm-exec node -e
+            "const m = require('./build/Debug/lite3.node')$<SEMICOLON> console.log(m.decode(m.encode({foo: 'bar'})))"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Debug with lldb (type 'run' to start)"
 )
