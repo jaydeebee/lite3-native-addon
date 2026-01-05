@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
+        node: [20, 22, 24]
+        include:
+          # Add arm64 Linux
+          - os: ubuntu-24.04-arm
+            node: 20
+          - os: ubuntu-24.04-arm
+            node: 22
+          - os: ubuntu-24.04-arm
+            node: 24
+
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} / Node ${{ matrix.node }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build native addon
+        run: pnpm build:native
+
+      - name: Build TypeScript
+        run: pnpm build:ts
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Verify addon loads
+        run: node -e "const { version, encode, decode } = require('./dist'); console.log('version:', version()); const buf = encode({ test: true }); console.log('roundtrip:', decode(buf));"

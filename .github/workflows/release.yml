@@ -1,0 +1,192 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# Required for semantic-release and npm provenance
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  # First check if a release is needed to avoid unnecessary prebuild work
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      should-release: ${{ steps.check.outputs.should-release }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Check if release needed
+        id: check
+        run: |
+          if npx semantic-release --dry-run 2>&1 | grep -q "Published release"; then
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            echo "Release will be created"
+          else
+            echo "should-release=false" >> $GITHUB_OUTPUT
+            echo "No release needed"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  prebuild:
+    needs: check-release
+    if: needs.check-release.outputs.should-release == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x64
+          - os: ubuntu-latest
+            arch: x64
+            node: 20
+          - os: ubuntu-latest
+            arch: x64
+            node: 22
+          - os: ubuntu-latest
+            arch: x64
+            node: 24
+
+          # Linux arm64
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            node: 20
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            node: 22
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            node: 24
+
+          # macOS arm64 (Apple Silicon)
+          - os: macos-latest
+            arch: arm64
+            node: 20
+          - os: macos-latest
+            arch: arm64
+            node: 22
+          - os: macos-latest
+            arch: arm64
+            node: 24
+
+          # macOS x64 (Intel)
+          - os: macos-13
+            arch: x64
+            node: 20
+          - os: macos-13
+            arch: x64
+            node: 22
+          - os: macos-13
+            arch: x64
+            node: 24
+
+          # Windows x64
+          - os: windows-latest
+            arch: x64
+            node: 20
+          - os: windows-latest
+            arch: x64
+            node: 22
+          - os: windows-latest
+            arch: x64
+            node: 24
+
+    runs-on: ${{ matrix.os }}
+    name: Prebuild ${{ matrix.os }} / ${{ matrix.arch }} / Node ${{ matrix.node }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build prebuild
+        run: pnpm prebuild --target ${{ matrix.node }}.0.0 --arch ${{ matrix.arch }}
+
+      - name: Upload prebuild artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-${{ matrix.os }}-${{ matrix.arch }}-node${{ matrix.node }}
+          path: prebuilds/
+          retention-days: 1
+
+  release:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    name: Publish Release
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build TypeScript
+        run: pnpm build:ts
+
+      - name: Download all prebuild artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: prebuilds-all
+          pattern: prebuild-*
+          merge-multiple: true
+
+      - name: Organize prebuilds
+        run: |
+          mkdir -p prebuilds
+          cp -r prebuilds-all/* prebuilds/ 2>/dev/null || true
+          echo "Prebuilds collected:"
+          find prebuilds -type f -name "*.node" | wc -l
+
+      - name: Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
