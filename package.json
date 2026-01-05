@@ -31,7 +31,7 @@
     "build:ts": "tsup",
     "build": "pnpm build:native && pnpm build:ts",
     "install": "prebuild-install || node-gyp rebuild",
-    "prebuild": "prebuild --all --strip",
+    "prebuild": "prebuild --strip --runtime napi --target 9",
     "clean": "node-gyp clean && rm -rf dist prebuilds",
     "test": "node --test",
     "release:dry-run": "semantic-release --dry-run"
@@ -46,6 +46,11 @@
   ],
   "license": "MIT",
   "gypfile": true,
+  "binary": {
+    "napi_versions": [
+      9
+    ]
+  },
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/github": "^12.0.2",
@@ -64,6 +69,7 @@
   },
   "dependencies": {
     "bindings": "^1.5.0",
+    "node-addon-api": "^8.5.0",
     "prebuild-install": "^7.1.3"
   }
 }

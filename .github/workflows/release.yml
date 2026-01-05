@@ -48,7 +48,6 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   prebuild:
     needs: check-release
@@ -60,49 +59,17 @@ jobs:
           # Linux x64
           - os: ubuntu-latest
             arch: x64
-            node: 20
-          - os: ubuntu-latest
-            arch: x64
-            node: 22
-          - os: ubuntu-latest
-            arch: x64
-            node: 24
 
           # Linux arm64
           - os: ubuntu-24.04-arm
             arch: arm64
-            node: 20
-          - os: ubuntu-24.04-arm
-            arch: arm64
-            node: 22
-          - os: ubuntu-24.04-arm
-            arch: arm64
-            node: 24
 
           # macOS arm64 (Apple Silicon)
           - os: macos-latest
             arch: arm64
-            node: 20
-          - os: macos-latest
-            arch: arm64
-            node: 22
-          - os: macos-latest
-            arch: arm64
-            node: 24
-
-          # Windows x64
-          - os: windows-latest
-            arch: x64
-            node: 20
-          - os: windows-latest
-            arch: x64
-            node: 22
-          - os: windows-latest
-            arch: x64
-            node: 24
 
     runs-on: ${{ matrix.os }}
-    name: Prebuild ${{ matrix.os }} / ${{ matrix.arch }} / Node ${{ matrix.node }}
+    name: Prebuild ${{ matrix.os }} / ${{ matrix.arch }}
 
     steps:
       - uses: actions/checkout@v4
@@ -112,7 +79,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -123,12 +90,12 @@ jobs:
         run: pnpm install --ignore-scripts
 
       - name: Build prebuild
-        run: pnpm prebuild --target ${{ matrix.node }}.0.0 --arch ${{ matrix.arch }}
+        run: pnpm prebuild --arch ${{ matrix.arch }}
 
       - name: Upload prebuild artifact
         uses: actions/upload-artifact@v4
         with:
-          name: prebuild-${{ matrix.os }}-${{ matrix.arch }}-node${{ matrix.node }}
+          name: prebuild-${{ matrix.os }}-${{ matrix.arch }}
           path: prebuilds/
           retention-days: 1
 
@@ -174,8 +141,11 @@ jobs:
           echo "Prebuilds collected:"
           find prebuilds -type f -name "*.node" | wc -l
 
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest
+
       - name: Release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Uses OIDC trusted publishing - no NPM_TOKEN needed

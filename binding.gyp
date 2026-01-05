@@ -16,6 +16,7 @@
         "deps/lite3/lib/nibble_base64/base64.c"
       ],
       "include_dirs": [
+        "<!@(node -p \"require('node-addon-api').include\")",
         "include",
         "deps/lite3/include",
         "deps/lite3/lib"
