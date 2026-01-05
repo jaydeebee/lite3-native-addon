@@ -90,17 +90,6 @@ jobs:
             arch: arm64
             node: 24
 
-          # macOS x64 (Intel)
-          - os: macos-13
-            arch: x64
-            node: 20
-          - os: macos-13
-            arch: x64
-            node: 22
-          - os: macos-13
-            arch: x64
-            node: 24
-
           # Windows x64
           - os: windows-latest
             arch: x64
