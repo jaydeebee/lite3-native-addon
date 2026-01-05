@@ -1,5 +1,5 @@
 {
-  "name": "@jaydeebee/lite3",
+  "name": "@jaydeebee/lite3-native-addon",
   "version": "0.1.0",
   "description": "Node.js bindings for lite3 (TRON) zero-copy serialization library",
   "main": "./dist/index.js",
