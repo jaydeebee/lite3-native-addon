@@ -48,7 +48,7 @@ encode_enumerable(napi_env env, napi_value value, bool is_array, lite3_ctx *ctx,
             free(key_str);
             return status;
         }
-        // We don't free key_str here because lite3_ctx_set_* takes ownership of the string
+        free(key_str);
     }
 
     return napi_ok;
@@ -92,7 +92,7 @@ encode_element(napi_env env, char *key_name, napi_value value, bool parent_is_ar
                     return napi_generic_failure;
                 }
             }
-            // We do not free str here, as lite3_ctx_set_str takes ownership of it
+            free(str);
             return napi_ok;
         }
 
