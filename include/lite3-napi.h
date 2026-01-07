@@ -36,4 +36,16 @@
 extern napi_value encode(napi_env, napi_callback_info);
 extern napi_value decode(napi_env, napi_callback_info);
 
+// Proxy support functions (addon_proxy.c):
+extern napi_value proxy_get_type(napi_env, napi_callback_info);
+extern napi_value proxy_get_array_type(napi_env, napi_callback_info);
+extern napi_value proxy_get_value(napi_env, napi_callback_info);
+extern napi_value proxy_get_array_element(napi_env, napi_callback_info);
+extern napi_value proxy_get_child_offset(napi_env, napi_callback_info);
+extern napi_value proxy_get_array_child_offset(napi_env, napi_callback_info);
+extern napi_value proxy_get_keys(napi_env, napi_callback_info);
+extern napi_value proxy_get_length(napi_env, napi_callback_info);
+extern napi_value proxy_has_key(napi_env, napi_callback_info);
+extern napi_value proxy_get_root_type(napi_env, napi_callback_info);
+
 #endif // LITE3_NAPI_H

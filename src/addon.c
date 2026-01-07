@@ -16,7 +16,18 @@ static napi_value Init(napi_env env, napi_value exports) {
   napi_property_descriptor props[] = {
     { "version", NULL, Version, NULL, NULL, NULL, napi_enumerable, NULL },
     { "encode", NULL, encode, NULL, NULL, NULL, napi_enumerable, NULL },
-    { "decode", NULL, decode, NULL, NULL, NULL, napi_enumerable, NULL }
+    { "decode", NULL, decode, NULL, NULL, NULL, napi_enumerable, NULL },
+    // Proxy support functions:
+    { "getType", NULL, proxy_get_type, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getArrayType", NULL, proxy_get_array_type, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getValue", NULL, proxy_get_value, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getArrayElement", NULL, proxy_get_array_element, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getChildOffset", NULL, proxy_get_child_offset, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getArrayChildOffset", NULL, proxy_get_array_child_offset, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getKeys", NULL, proxy_get_keys, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getLength", NULL, proxy_get_length, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "hasKey", NULL, proxy_has_key, NULL, NULL, NULL, napi_enumerable, NULL },
+    { "getRootType", NULL, proxy_get_root_type, NULL, NULL, NULL, napi_enumerable, NULL }
   };
 
   NAPI_CALL(env, NULL, napi_define_properties(env, exports, a_count(props), props), NULL);

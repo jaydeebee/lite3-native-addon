@@ -33,7 +33,8 @@
     "install": "prebuild-install || node-gyp rebuild",
     "prebuild": "prebuild --strip --runtime napi --target 9",
     "clean": "node-gyp clean && rm -rf dist prebuilds",
-    "test": "node --test",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "release:dry-run": "semantic-release --dry-run"
   },
   "keywords": [
@@ -62,7 +63,8 @@
     "prebuild": "^13.0.1",
     "semantic-release": "^25.0.2",
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=20.0.0"

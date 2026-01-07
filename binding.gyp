@@ -9,6 +9,7 @@
         "src/addon.c",
         "src/addon_encode.c",
         "src/addon_decode.c",
+        "src/addon_proxy.c",
         "deps/lite3/src/lite3.c",
         "deps/lite3/src/json_enc.c",
         "deps/lite3/src/ctx_api.c",
