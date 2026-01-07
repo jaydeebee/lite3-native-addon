@@ -136,10 +136,6 @@ const rawBuffer = proxy[$buffer];
 
 Unsupported types (functions, undefined, symbols) are silently skipped during encoding.
 
-## Dependencies
-
-This addon uses a [forked version](https://github.com/jaydeebee/lite3) of the lite3 library as a git submodule. I hope to resolve this and use the canonical version from [fastserial/lite3](https://github.com/fastserial/lite3) in the future.
-
 ## License
 
 MIT
