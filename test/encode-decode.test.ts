@@ -106,3 +106,48 @@ describe('encode/decode roundtrip', () => {
     expect(decode(encode(obj))).toEqual(obj);
   });
 });
+
+describe('root-level arrays', () => {
+  it('handles simple arrays', () => {
+    const arr = [1, 2, 3];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles empty arrays', () => {
+    const arr: unknown[] = [];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles arrays with strings', () => {
+    const arr = ['hello', 'world'];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles arrays with mixed types', () => {
+    const arr = [1, 'two', true, null, 3.14];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles nested arrays', () => {
+    const arr = [[1, 2], [3, 4], [5, 6]];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles arrays with objects', () => {
+    const arr = [{ a: 1 }, { b: 2 }, { c: 3 }];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles deeply nested structures in arrays', () => {
+    const arr = [
+      { user: { name: 'Alice', tags: ['admin', 'active'] } },
+      { user: { name: 'Bob', tags: ['guest'] } }
+    ];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+
+  it('handles arrays with unicode', () => {
+    const arr = ['🎉', '中文', 'hello 世界'];
+    expect(decode(encode(arr))).toEqual(arr);
+  });
+});

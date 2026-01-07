@@ -204,8 +204,6 @@ decode(napi_env env, napi_callback_info info) {
         return NULL;
     }
 
-    enum lite3_type root_type = (enum lite3_type)*(ctx-> buf);
-
     // Decode the buffer into a napi_value:
     napi_value result;
     NAPI_CALL(
@@ -215,7 +213,7 @@ decode(napi_env env, napi_callback_info info) {
             env, // napi_env
             ctx, // lite3_ctx*
             0,   // offset (0 == root)
-            LITE3_TYPE_OBJECT, // type: TODO: determine dynamically
+            lite3_ctx_get_root_type(ctx), // type
             NULL, // key (NULL == root, or not an object)
             -1, // index (-1 == not an array index)
             &result // [out] result
