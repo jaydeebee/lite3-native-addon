@@ -16,7 +16,10 @@
     "dist",
     "prebuilds",
     "src",
-    "deps",
+    "deps/lite3/src",
+    "deps/lite3/include",
+    "deps/lite3/lib",
+    "deps/lite3/LICENSE",
     "include",
     "binding.gyp"
   ],
