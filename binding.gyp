@@ -32,7 +32,8 @@
         "WARNING_CFLAGS": ["-Wall", "-Wextra"]
       },
       "defines": [
-        "NAPI_VERSION=9"
+        "NAPI_VERSION=9",
+        "LITE3_LIB_VERSION=\"1.0.0-<!@(cd deps/lite3 && git rev-parse --short HEAD)<!@(cd deps/lite3 && git diff --quiet || echo -dirty)\""
       ],
       "configurations": {
         "Debug": {

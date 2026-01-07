@@ -1,6 +1,16 @@
 import bindings from 'bindings';
+import { createRequire } from 'module';
 
 const addon = bindings('lite3.node');
+
+// Read version from package.json at runtime
+const require = createRequire(import.meta.url);
+const pkg = require('../package.json');
+
+/** Returns the package version (set by semantic-release during CI) */
+export function version(): string {
+  return pkg.version;
+}
 
 /**
  * Constraint for values that can be serialized by lite3.
@@ -29,8 +39,8 @@ export type Lite3TypeString =
  * lite3 native addon interface.
  */
 export interface Lite3Addon {
-  /** Returns the addon version string. */
-  version(): string;
+  /** Returns the lite3 library version string (e.g., "1.0.0-81ed77a") */
+  lite3Version(): string;
 
   /**
    * Encodes a JavaScript object or array into a lite3 binary buffer.
@@ -80,7 +90,7 @@ export interface Lite3Addon {
 }
 
 export const {
-  version,
+  lite3Version,
   encode,
   decode,
   getType,

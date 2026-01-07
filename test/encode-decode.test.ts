@@ -1,10 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { encode, decode, version } from '../src/index';
+import { encode, decode, version, lite3Version } from '../src/index';
 
 describe('version', () => {
-  it('returns a version string', () => {
+  it('returns a semver-like version string', () => {
     expect(typeof version()).toBe('string');
-    expect(version()).toMatch(/^\d+\.\d+\.\d+$/);
+    // Accepts semver with optional pre-release suffix (e.g., "1.0.0" or "0.0.0-unreleased")
+    expect(version()).toMatch(/^\d+\.\d+\.\d+(-[\w.]+)?$/);
+  });
+});
+
+describe('lite3Version', () => {
+  it('returns lite3 library version with git hash', () => {
+    expect(typeof lite3Version()).toBe('string');
+    // Format: "1.0.0-<hash>" or "1.0.0-<hash>-dirty"
+    expect(lite3Version()).toMatch(/^\d+\.\d+\.\d+-[a-f0-9]+(-dirty)?$/);
   });
 });
 
